@@ -10,13 +10,16 @@ permissions:
     id-token: write
     contents: read
 
-env:
-  LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
-  iam_role_arn: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    environment : "PROD"
+    env:
+     LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+     iam_role_arn: ${{ secrets.LAMBDA_FUNCTION_NAME }}
 
     steps:
       - name: Checkout code
@@ -24,7 +27,7 @@ jobs:
 
 
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.iam_role_arn }}
           aws-region: ap-south-2
@@ -39,9 +42,3 @@ jobs:
           handler: index.handler
           runtime: nodejs22.x
 
-
-        #      - name: Configure AWS credentials
-        # uses: aws-actions/configure-aws-credentials@v2
-        # with:
-        #   role-to-assume: ${{ env.iam_role_arn }}
-        #   aws-region: ap-south-2
