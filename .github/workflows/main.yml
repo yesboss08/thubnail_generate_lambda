@@ -1,0 +1,40 @@
+name: Deploy Thumbnail Generator Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+
+permissions:
+    id-token: write
+    contents: read
+
+env:
+  LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+  iam_role_arn: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.iam_role_arn }}
+          aws-region: ap-south-2
+
+        
+
+      -  name: Deploy Lambda Function
+         uses: aws-actions/aws-lambda-deploy@v1.1.0
+         with:
+          function-name: ${{env.LAMBDA_FUNCTION_NAME}}
+          code-artifacts-dir: .
+          handler: index.handler
+          runtime: nodejs22.x
