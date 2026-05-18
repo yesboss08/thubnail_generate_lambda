@@ -1,0 +1,11 @@
+node_modules/
+keys/
+bin/
+.env
+*.pem
+*.key
+*.p12
+*.pfx
+ todo.md
+demoXlsx.js
+dempDocx.js
