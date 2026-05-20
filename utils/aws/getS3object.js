@@ -8,9 +8,12 @@ import { getSecrets } from "./secreteManeger.js";
 
 const client = new S3Client({ region: 'ap-south-1' })
 
-const getBucketName = async () => {
+const getBucketName = async (bucketType) => {
     const secrets = await getSecrets();
-    return secrets?.Destination_S3_BUCKET || process.env.Destination_S3_BUCKET;
+    if(bucketType =='download'){
+        return secrets?.Source_S3_BUCKET || process.env.Source_S3_BUCKET
+    }
+    return secrets?.Destination_S3_BUCKET || process.env.Destination_S3_BUCKET
 }
 
 export const DownloadS3Object = async (sourceKey, fileName) => {
