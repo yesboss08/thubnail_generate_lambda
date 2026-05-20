@@ -24,8 +24,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: install the packages
+        run: npm ci
 
-# fix this error - Source Account ID is needed if the Role Name is provided and not the Role Arn.
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
