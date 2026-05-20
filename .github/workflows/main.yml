@@ -19,13 +19,13 @@ jobs:
     environment : "PROD"
     env:
      LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
-     iam_role_arn: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+     iam_role_arn: ${{ secrets.IAM_ROLE_AWS }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-
+# fix this error - Source Account ID is needed if the Role Name is provided and not the Role Arn.
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
