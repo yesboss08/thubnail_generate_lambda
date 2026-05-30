@@ -2,9 +2,12 @@ import dotenv from 'dotenv'
 import { DownloadS3Object, UploadS3Object } from './utils/aws/getS3object.js'
 import { generateS3Key, handleFileType } from './utils/generate_thumbnail.js'
 
+import {exec} from 'node:child_process'
+
 dotenv.config()
 
 export const handler = async (event, context) => {
+    const yo = exec()
     try {
         const record = event?.Records?.[0]
         const s3 = record?.s3

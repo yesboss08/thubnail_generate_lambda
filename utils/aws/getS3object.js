@@ -5,19 +5,19 @@ import { mkdir } from "node:fs/promises";
 import { getSecrets } from "./secreteManeger.js";
 
 
-
-const client = new S3Client({ region: 'ap-south-1' })
-
 const getBucketName = async (bucketType) => {
     const secrets = await getSecrets();
     if(bucketType =='download'){
-        return secrets?.Source_S3_BUCKET || process.env.Source_S3_BUCKET
+        return {bucketName:secrets?.Source_S3_BUCKET || process.env.Source_S3_BUCKET , bucketRegion:secrets?.Source_S3_BUCKET_REGION || process.env.Source_S3_BUCKET_REGION}
     }
-    return secrets?.Destination_S3_BUCKET || process.env.Destination_S3_BUCKET
+    return {bucketName:secrets?.Thumbnail_S3_BUCKET || process.env.Thumbnail_S3_BUCKET , bucketRegion:secrets?.Thumbnail_S3_BUCKET_REGION || process.env.Thumbnail_S3_BUCKET_REGION}
 }
 
 export const DownloadS3Object = async (sourceKey, fileName) => {
-    const bucket = await getBucketName();
+    const bucketInfo = await getBucketName();
+    const { bucketName: bucket , bucketRegion } = bucketInfo.bucketName;
+    
+    const client = new S3Client({ region:bucketRegion })
     const command = new GetObjectCommand({ Bucket: bucket, Key: sourceKey })
     try {
         await mkdir("/tmp/input", { recursive: true });

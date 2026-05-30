@@ -1,22 +1,15 @@
-
-import { generateImageThumbnail } from "./File_Type/image.js"
-import { generateAudioThumbnail } from "./File_Type/music.js"
-import { generatePdfThumbnail } from "./File_Type/pdf.js"
-import { generateTxtThumbnail } from "./File_Type/text.js"
-import { generateVideoThumbnail } from "./File_Type/video.js"
-import { generateUnknownThumbnail } from "./File_Type/unknown.js"
 import mime from "mime-types"
 import path from "path"
 import { mkdir } from "node:fs/promises"
 
 
-const fileObject = {
-    "video": generateVideoThumbnail,
-    "image": generateImageThumbnail,
-    "pdf": generatePdfThumbnail,
-    "text": generateTxtThumbnail,
-    "audio": generateAudioThumbnail,
-    "unknown": generateUnknownThumbnail
+const fileHandlers = {
+    video: async () => (await import("./File_Type/video.js")).generateVideoThumbnail,
+    image: async () => (await import("./File_Type/image.js")).generateImageThumbnail,
+    pdf: async () => (await import("./File_Type/pdf.js")).generatePdfThumbnail,
+    text: async () => (await import("./File_Type/text.js")).generateTxtThumbnail,
+    audio: async () => (await import("./File_Type/music.js")).generateAudioThumbnail,
+    unknown: async () => (await import("./File_Type/unknown.js")).generateUnknownThumbnail,
 }
 
 
@@ -37,6 +30,7 @@ export const handleFileType = async (key) => {
         const functionName = getCategory(fileType)
         const baseName = path.parse(key).name
         await mkdir("/tmp/output", { recursive: true })
+        //right now we only handle the thumbnail image not for short video 
         const outputPath = `/tmp/output/${baseName}.jpg`
         const context = {
             fileName: key,
@@ -44,7 +38,8 @@ export const handleFileType = async (key) => {
             inputPath: `/tmp/input/${key}`,
             outputPath
         }
-        const res = await fileObject[functionName](context)
+        const generator = await fileHandlers[functionName]()
+        const res = await generator(context)
         if (!res?.ok) return false
         return res
     } catch (error) {
